@@ -4,6 +4,41 @@ export const catalogFixtures = {
     { id: '2', code: 'SILVER', name: 'Silver', displayOrder: 2 },
     { id: '3', code: 'DIAMOND', name: 'Diamond', displayOrder: 3 },
   ],
+  metalRates: [
+    {
+      metalId: '1',
+      code: 'GOLD',
+      name: 'Gold',
+      rateUnit: 'PER_10G',
+      currentPrice: 9820,
+      previousPrice: 9796,
+      change: 24,
+      changePercent: 0.24,
+      asOfDate: new Date().toISOString().slice(0, 10),
+    },
+    {
+      metalId: '2',
+      code: 'SILVER',
+      name: 'Silver',
+      rateUnit: 'PER_10G',
+      currentPrice: 120,
+      previousPrice: 121,
+      change: -1,
+      changePercent: -0.83,
+      asOfDate: new Date().toISOString().slice(0, 10),
+    },
+    {
+      metalId: '3',
+      code: 'DIAMOND',
+      name: 'Diamond',
+      rateUnit: 'PER_10G',
+      currentPrice: null,
+      previousPrice: null,
+      change: null,
+      changePercent: null,
+      asOfDate: null,
+    },
+  ],
   categoriesByMetal: {
     '1': [
       {
@@ -57,6 +92,9 @@ export const catalogFixtures = {
         children: [
           { id: '141', metalId: '1', parentId: '104', name: 'Jhumka', slug: 'jhumka-earrings', productCount: 30, children: [] },
           { id: '142', metalId: '1', parentId: '104', name: 'Studs', slug: 'stud-earrings', productCount: 21, children: [] },
+          { id: '146', metalId: '1', parentId: '104', name: 'Hoops', slug: 'hoop-earrings', productCount: 17, children: [] },
+          { id: '147', metalId: '1', parentId: '104', name: 'Drops', slug: 'drop-earrings', productCount: 14, children: [] },
+          { id: '148', metalId: '1', parentId: '104', name: 'Chandbali', slug: 'chandbali-earrings', productCount: 12, children: [] },
         ],
       },
       {
@@ -125,6 +163,10 @@ export const catalogFixtures = {
       badge: 'Fast Selling',
       imageUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=600&q=80',
       variant: { id: 'v-1', purity: '22K', weightGrams: 2.35, minimumOrderQuantity: 1, yourPrice: 18450, inStock: true },
+      variants: [
+        { id: 'v-1', purity: '22K', weightGrams: 2.35, minimumOrderQuantity: 1, yourPrice: 18450, inStock: true },
+        { id: 'v-1b', purity: '22K', weightGrams: 3.1, minimumOrderQuantity: 1, yourPrice: 24300, inStock: true },
+      ],
     },
     {
       id: 'p-2',
@@ -135,6 +177,38 @@ export const catalogFixtures = {
       badge: 'Best Margin',
       imageUrl: 'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=600&q=80',
       variant: { id: 'v-2', purity: '22K', weightGrams: 1.12, minimumOrderQuantity: 2, yourPrice: 7920, inStock: true },
+    },
+    {
+      id: 'p-13',
+      metalId: '1',
+      categoryIds: ['104', '146'],
+      designCode: 'GHP41102',
+      name: 'Classic Hoops',
+      imageUrl: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80',
+      variant: { id: 'v-13', purity: '22K', weightGrams: 4.2, minimumOrderQuantity: 1, yourPrice: 31200, inStock: true },
+      variants: [
+        { id: 'v-13', purity: '22K', weightGrams: 4.2, minimumOrderQuantity: 1, yourPrice: 31200, inStock: true },
+        { id: 'v-13b', purity: '22K', weightGrams: 6.5, minimumOrderQuantity: 1, yourPrice: 48100, inStock: true },
+        { id: 'v-13c', purity: '22K', weightGrams: 8.8, minimumOrderQuantity: 1, yourPrice: 65200, inStock: true },
+      ],
+    },
+    {
+      id: 'p-14',
+      metalId: '1',
+      categoryIds: ['104', '147'],
+      designCode: 'GDP41205',
+      name: 'Pear Drops',
+      imageUrl: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=600&q=80',
+      variant: { id: 'v-14', purity: '22K', weightGrams: 2.85, minimumOrderQuantity: 2, yourPrice: 21100, inStock: true },
+    },
+    {
+      id: 'p-15',
+      metalId: '1',
+      categoryIds: ['104', '148'],
+      designCode: 'GCB41308',
+      name: 'Traditional Chandbali',
+      imageUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=600&q=80',
+      variant: { id: 'v-15', purity: '22K', weightGrams: 6.75, minimumOrderQuantity: 1, yourPrice: 49900, inStock: true },
     },
     {
       id: 'p-3',

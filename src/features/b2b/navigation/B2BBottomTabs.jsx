@@ -1,8 +1,9 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FileText, Grid2X2, Home, ShoppingCart, User } from 'lucide-react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../../theme/useAppTheme';
 import { routeNames } from '../../../navigation/routeNames';
@@ -12,6 +13,9 @@ import B2BOrdersScreen from '../orders/screens/B2BOrdersScreen';
 import B2BCartScreen from '../cart/screens/B2BCartScreen';
 import B2BProfileScreen from '../profile/screens/B2BProfileScreen';
 import { typography } from '../../../theme/typography';
+import { fetchB2BCart } from '../cart/actions/cartActions';
+import { selectB2BCartItemCount } from '../cart/selectors';
+import FloatingCartButton from './components/FloatingCartButton';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,9 +29,15 @@ const icons = {
 
 const B2BBottomTabs = () => {
   const theme = useAppTheme();
+  const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const bottomOffset = Math.max(insets.bottom, 12);
   const tabBarHeight = 66;
+  const cartCount = useSelector(selectB2BCartItemCount);
+
+  useEffect(() => {
+    dispatch(fetchB2BCart()).catch(() => {});
+  }, [dispatch]);
 
   return (
     <Tab.Navigator
@@ -74,8 +84,16 @@ const B2BBottomTabs = () => {
     >
       <Tab.Screen name={routeNames.home} component={B2BHomeScreen} options={{ tabBarLabel: 'Home' }} />
       <Tab.Screen name={routeNames.catalog} component={B2BCatalogScreen} options={{ tabBarLabel: 'Categories' }} />
+      <Tab.Screen
+        name={routeNames.cart}
+        component={B2BCartScreen}
+        options={{
+          tabBarLabel: 'Cart',
+          tabBarShowLabel: false,
+          tabBarButton: (props) => <FloatingCartButton {...props} count={cartCount} />,
+        }}
+      />
       <Tab.Screen name={routeNames.orders} component={B2BOrdersScreen} options={{ tabBarLabel: 'Orders' }} />
-      <Tab.Screen name={routeNames.cart} component={B2BCartScreen} options={{ tabBarLabel: 'Cart', tabBarBadge: 3 }} />
       <Tab.Screen name={routeNames.profile} component={B2BProfileScreen} options={{ tabBarLabel: 'Profile' }} />
     </Tab.Navigator>
   );

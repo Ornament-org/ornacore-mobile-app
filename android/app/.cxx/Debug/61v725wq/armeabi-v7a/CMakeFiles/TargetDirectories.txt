@@ -4,6 +4,9 @@
 /Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/AsyncStorageSpec_autolinked_build/CMakeFiles/react_codegen_AsyncStorageSpec.dir
 /Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/AsyncStorageSpec_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/AsyncStorageSpec_autolinked_build/CMakeFiles/rebuild_cache.dir
+/Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/RNCGeolocationSpec_autolinked_build/CMakeFiles/react_codegen_RNCGeolocationSpec.dir
+/Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/RNCGeolocationSpec_autolinked_build/CMakeFiles/edit_cache.dir
+/Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/RNCGeolocationSpec_autolinked_build/CMakeFiles/rebuild_cache.dir
 /Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir
 /Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/rngesturehandler_codegen_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/akash/Desktop/OrnaMent/ornacore-mobile-app/android/app/.cxx/Debug/61v725wq/armeabi-v7a/rngesturehandler_codegen_autolinked_build/CMakeFiles/rebuild_cache.dir

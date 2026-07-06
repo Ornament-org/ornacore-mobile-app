@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { routeNames } from '../../../navigation/routeNames';
-import ShopkeeperRegistrationScreen from '../screens/ShopkeeperRegistrationScreen';
+import ShopRegistrationScreen from '../screens/ShopRegistration';
 import LoginScreen from '../screens/LoginScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import ThemedPlaceholder from '../../../components/common/ThemedPlaceholder';
@@ -21,7 +21,7 @@ const B2BAuthNavigator = ({ initialRouteName = routeNames.shopKeeperWelcome }) =
     <Stack.Screen name={routeNames.shopKeeperWelcome} component={WelcomeScreen} />
     <Stack.Screen name={routeNames.login} component={LoginScreen} />
     <Stack.Screen name={routeNames.register} component={RegisterScreen} />
-    <Stack.Screen name={routeNames.shopkeeperRegister} component={ShopkeeperRegistrationScreen} />
+    <Stack.Screen name={routeNames.shopkeeperRegister} component={ShopRegistrationScreen} />
     <Stack.Screen name={routeNames.forgotPassword} component={ForgotPasswordScreen} />
     <Stack.Screen name={routeNames.completeShopProfile} component={CompleteShopProfileScreen} />
   </Stack.Navigator>

@@ -1,0 +1,138 @@
+import { StyleSheet } from 'react-native';
+import { typography } from '../../../../theme/typography';
+
+export const createStyles = (theme) =>
+  StyleSheet.create({
+    backdrop: {
+      flex: 1,
+      backgroundColor: theme.overlayMedium,
+      justifyContent: 'flex-end',
+    },
+    backdropPress: { flex: 1 },
+    sheet: {
+      backgroundColor: theme.surface,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: '86%',
+      paddingBottom: 24,
+    },
+    handle: {
+      alignSelf: 'center',
+      width: 40,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: theme.border,
+      marginTop: 10,
+      marginBottom: 6,
+    },
+    closeButton: {
+      position: 'absolute',
+      top: 10,
+      right: 14,
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.surfaceMuted,
+      zIndex: 1,
+    },
+    scrollContent: { paddingHorizontal: 18, paddingBottom: 10 },
+    image: {
+      width: '100%',
+      height: 220,
+      borderRadius: 14,
+      backgroundColor: theme.surfaceMuted,
+      marginTop: 6,
+    },
+    name: {
+      ...typography.h5,
+      color: theme.text,
+      marginTop: 14,
+    },
+    designCode: {
+      ...typography.caption,
+      color: theme.muted,
+      marginTop: 2,
+    },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginTop: 10,
+    },
+    price: {
+      fontFamily: typography.fontFamily.bold,
+      color: theme.danger,
+      fontSize: 22,
+      fontWeight: '800',
+    },
+    perPiece: { fontSize: 11, fontWeight: '700', color: theme.muted },
+    moq: {
+      ...typography.caption,
+      color: theme.muted,
+      marginTop: 4,
+    },
+    sectionTitle: {
+      ...typography.subtitle2,
+      color: theme.text,
+      fontWeight: '800',
+      marginTop: 20,
+      marginBottom: 10,
+    },
+    variantRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    variantChip: {
+      paddingHorizontal: 14,
+      height: 38,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: theme.border,
+      backgroundColor: theme.surfaceMuted,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    variantChipActive: {
+      backgroundColor: theme.primary,
+      borderColor: theme.primary,
+    },
+    variantChipText: {
+      ...typography.caption,
+      fontSize: 12,
+      fontWeight: '700',
+      color: theme.text,
+    },
+    variantChipTextActive: {
+      color: theme.onPrimary,
+    },
+    stockText: {
+      ...typography.caption,
+      fontSize: 11,
+      marginTop: 10,
+    },
+    footer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 18,
+      paddingTop: 14,
+      borderTopWidth: 1,
+      borderTopColor: theme.border,
+      gap: 14,
+    },
+    addButton: {
+      flex: 1,
+      height: 48,
+      borderRadius: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.primary,
+    },
+    addButtonDisabled: {
+      opacity: 0.5,
+    },
+    addButtonText: {
+      ...typography.button,
+      color: theme.onPrimary,
+      fontSize: 14,
+    },
+  });

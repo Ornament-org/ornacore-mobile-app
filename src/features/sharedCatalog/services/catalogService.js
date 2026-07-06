@@ -1,5 +1,6 @@
 import apiClient from '../../../services/apiClient';
 import appConfig from '../../../config/appConfig';
+import { getPrimaryImageUrl } from '../../../utils/getPrimaryImageUrl';
 import { catalogFixtures } from '../data/catalogFixtures';
 
 const unwrapData = (response) => response?.data?.data ?? response?.data ?? null;
@@ -10,6 +11,7 @@ const catalogEndpoints = {
   metals: '/shopkeeper/metals',
   categoryTree: '/shopkeeper/categories/tree',
   products: '/shopkeeper/products',
+  metalRates: '/shopkeeper/metal-rates',
 };
 
 const cleanParams = (params) =>
@@ -37,8 +39,36 @@ const normalizeCategory = (category) => ({
   children: (category.children ?? []).map(normalizeCategory),
 });
 
+const normalizeMetalRate = (rate) => ({
+  metalId: normalizeId(rate.metalId),
+  code: rate.code,
+  name: rate.name,
+  rateUnit: rate.rateUnit,
+  currentPrice: rate.currentPrice === null ? null : Number(rate.currentPrice),
+  previousPrice: rate.previousPrice === null ? null : Number(rate.previousPrice),
+  change: rate.change === null ? null : Number(rate.change),
+  changePercent: rate.changePercent === null ? null : Number(rate.changePercent),
+  asOfDate: rate.asOfDate,
+});
+
+const normalizeVariant = (variant = {}) => ({
+  id: normalizeId(variant.id),
+  sku: variant.sku ?? null,
+  name: variant.name ?? null,
+  purity: variant.purity ?? (variant.karat ? `${variant.karat}K` : null),
+  karat: variant.karat ?? null,
+  publicPurity: variant.publicPurity ?? null,
+  publicKarat: variant.publicKarat ?? null,
+  weightGrams: Number(variant.weightGrams ?? 0),
+  minimumOrderQuantity: Number(variant.minimumOrderQuantity ?? 1),
+  yourPrice: variant.yourPrice === null ? null : Number(variant.yourPrice ?? 0),
+  inStock: Number(variant.inventory?.availableQuantity ?? variant.inventory?.onHandQuantity ?? 1) > 0,
+  isDefault: Boolean(variant.isDefault),
+});
+
 const normalizeProduct = (product) => {
-  const variant = product.variant ?? product.variants?.[0] ?? {};
+  const rawVariants = product.variants?.length ? product.variants : product.variant ? [product.variant] : [];
+  const defaultVariant = rawVariants.find((item) => item.isDefault) ?? rawVariants[0] ?? {};
   const categoryIds =
     product.categoryIds ??
     product.categoryMappings?.map((mapping) => normalizeId(mapping.categoryId ?? mapping.category?.id)) ??
@@ -51,15 +81,9 @@ const normalizeProduct = (product) => {
     designCode: product.designCode,
     name: product.name,
     badge: product.badge,
-    imageUrl: product.imageUrl ?? product.images?.find((image) => image.isPrimary)?.media?.url,
-    variant: {
-      id: normalizeId(variant.id),
-      purity: variant.purity ?? (variant.karat ? `${variant.karat}K` : null),
-      weightGrams: Number(variant.weightGrams ?? 0),
-      minimumOrderQuantity: Number(variant.minimumOrderQuantity ?? 1),
-      yourPrice: variant.yourPrice === null ? null : Number(variant.yourPrice ?? 0),
-      inStock: Number(variant.inventory?.availableQuantity ?? variant.inventory?.onHandQuantity ?? 1) > 0,
-    },
+    imageUrl: getPrimaryImageUrl(product),
+    variant: normalizeVariant(defaultVariant),
+    variants: rawVariants.map(normalizeVariant),
   };
 };
 
@@ -88,6 +112,18 @@ export const catalogService = {
       const fixtures = loadFixture(() =>
         (catalogFixtures.categoriesByMetal[normalizeId(metalId)] ?? []).map(normalizeCategory),
       );
+      if (fixtures) return fixtures;
+      throw error;
+    }
+  },
+
+  async getMetalRates() {
+    try {
+      const response = await apiClient.get(catalogEndpoints.metalRates);
+      const data = unwrapData(response);
+      return (Array.isArray(data) ? data : []).map(normalizeMetalRate);
+    } catch (error) {
+      const fixtures = loadFixture(() => (catalogFixtures.metalRates ?? []).map(normalizeMetalRate));
       if (fixtures) return fixtures;
       throw error;
     }

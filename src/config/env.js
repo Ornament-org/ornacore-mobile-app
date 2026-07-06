@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 const developmentApiBaseUrl =
-  Platform.OS === 'android' ? 'http://10.0.2.2:4000/api/v1' : 'http://localhost:4000/api/v1';
+  Platform.OS === 'android' ? 'http://10.0.2.2:4500/api/v1' : 'http://localhost:4500/api/v1';
 
 // Environment configuration
 const ENV = {

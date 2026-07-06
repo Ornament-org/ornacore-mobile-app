@@ -13,6 +13,7 @@ import ApprovalNavigator from '../features/approval/navigation/ApprovalNavigator
 import B2BSegment from '../features/b2b/navigation/B2BSegment';
 import B2CSegment from '../features/b2c/navigation/B2CSegment';
 import SplashNavigator from '../features/onboarding/navigation/SplashNavigator';
+import { ProductSheetProvider } from '../features/b2b/products/context/ProductSheetContext';
 import { bootstrapAuth } from '../features/auth/actions/authActions';
 import { getRootRouteForSession } from '../features/auth/selectors/sessionSelectors';
 import { useAppTheme } from '../theme/useAppTheme';
@@ -74,16 +75,18 @@ const RootNavigator = () => {
         },
       }}
     >
-      <Stack.Navigator
-        initialRouteName={routeNames.splash}
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name={routeNames.splash} component={SplashNavigator} />
-        <Stack.Screen name={routeNames.public} component={PublicNavigator} />
-        <Stack.Screen name={routeNames.b2b} component={B2BSegment} />
-        <Stack.Screen name={routeNames.b2c} component={B2CSegment} />
-        <Stack.Screen name={routeNames.approval} component={ApprovalNavigator} />
-      </Stack.Navigator>
+      <ProductSheetProvider>
+        <Stack.Navigator
+          initialRouteName={routeNames.splash}
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name={routeNames.splash} component={SplashNavigator} />
+          <Stack.Screen name={routeNames.public} component={PublicNavigator} />
+          <Stack.Screen name={routeNames.b2b} component={B2BSegment} />
+          <Stack.Screen name={routeNames.b2c} component={B2CSegment} />
+          <Stack.Screen name={routeNames.approval} component={ApprovalNavigator} />
+        </Stack.Navigator>
+      </ProductSheetProvider>
     </NavigationContainer>
   );
 };

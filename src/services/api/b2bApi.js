@@ -30,25 +30,18 @@ export const b2bCatalogApi = {
 // B2B Cart APIs
 export const b2bCartApi = {
   // Get cart items
-  getCart: () => apiClient.get('/b2b/cart'),
-  
+  getCart: () => apiClient.get('/shopkeeper/cart'),
+
   // Add item to cart
-  addToCart: (data) => apiClient.post('/b2b/cart/items', data),
-  
+  addToCart: (data) => apiClient.post('/shopkeeper/cart/items', data),
+
   // Update cart item
-  updateCartItem: (itemId, data) => 
-    apiClient.put(`/b2b/cart/items/${itemId}`, data),
-  
+  updateCartItem: (itemId, data) =>
+    apiClient.patch(`/shopkeeper/cart/items/${itemId}`, data),
+
   // Remove cart item
-  removeCartItem: (itemId) => 
-    apiClient.delete(`/b2b/cart/items/${itemId}`),
-  
-  // Clear cart
-  clearCart: () => apiClient.delete('/b2b/cart'),
-  
-  // Apply bulk discount
-  applyBulkDiscount: (data) => 
-    apiClient.post('/b2b/cart/bulk-discount', data),
+  removeCartItem: (itemId) =>
+    apiClient.delete(`/shopkeeper/cart/items/${itemId}`),
 };
 
 // B2B Order APIs

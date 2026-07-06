@@ -17,8 +17,6 @@ export const B2B_REMOVE_CART_LOADING = 'B2B_REMOVE_CART_LOADING';
 export const B2B_REMOVE_CART_SUCCESS = 'B2B_REMOVE_CART_SUCCESS';
 export const B2B_REMOVE_CART_ERROR = 'B2B_REMOVE_CART_ERROR';
 
-export const B2B_CLEAR_CART_SUCCESS = 'B2B_CLEAR_CART_SUCCESS';
-
 // Cart Actions
 export const fetchB2BCart = () => async (dispatch) => {
   dispatch({ type: B2B_CART_LOADING });
@@ -98,24 +96,3 @@ export const removeFromB2BCart = (itemId) => async (dispatch) => {
   }
 };
 
-export const clearB2BCart = () => async (dispatch) => {
-  try {
-    await b2bApi.cart.clearCart();
-    dispatch({
-      type: B2B_CLEAR_CART_SUCCESS,
-    });
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const applyB2BBulkDiscount = (data) => async (dispatch) => {
-  try {
-    const response = await b2bApi.cart.applyBulkDiscount(data);
-    // Refresh cart after applying discount
-    dispatch(fetchB2BCart());
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};

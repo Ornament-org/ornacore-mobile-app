@@ -6,10 +6,17 @@ import { formatWeight } from '../../utils/formatWeight';
 import { useAppTheme } from '../../theme/useAppTheme';
 import { typography } from '../../theme/typography';
 
-const ProductCard = ({ product, onPress, onAdd, compact = false, commerce = false }) => {
+const ProductCard = ({ product, onPress, onAdd, compact = false, commerce = false, layout = 'default', metalName }) => {
   const theme = useAppTheme();
-  const styles = createStyles(theme, compact, commerce);
+  const isGrid = layout === 'grid';
+  const styles = createStyles(theme, compact, commerce, isGrid);
   const variant = product.variant ?? {};
+  const gridMeta = [
+    [variant.purity, metalName].filter(Boolean).join(' '),
+    variant.publicPurity ?? variant.publicKarat,
+  ]
+    .filter(Boolean)
+    .join('  |  ');
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.88} onPress={onPress}>
       <View style={styles.imageWrap}>
@@ -17,21 +24,42 @@ const ProductCard = ({ product, onPress, onAdd, compact = false, commerce = fals
         <TouchableOpacity style={styles.heartButton} activeOpacity={0.7}>
           <Heart color={theme.text} size={compact ? 14 : 17} />
         </TouchableOpacity>
-        {!compact && product.badge ? <Text style={styles.badge}>{product.badge}</Text> : null}
+        {!compact && !isGrid && product.badge ? <Text style={styles.badge}>{product.badge}</Text> : null}
       </View>
 
       <View style={styles.body}>
-        <Text style={styles.code} numberOfLines={1}>{product.designCode}</Text>
+        {!isGrid ? <Text style={styles.code} numberOfLines={1}>{product.designCode}</Text> : null}
         <Text style={styles.name} numberOfLines={1}>{product.name}</Text>
-        <Text style={styles.meta}>
-          {variant.purity}  ·  {formatWeight(variant.weightGrams)}
-        </Text>
-        {commerce ? <Text style={styles.moq}>MOQ: {variant.minimumOrderQuantity ?? 1} Pc</Text> : null}
-        <Text style={styles.price}>
-          {variant.yourPrice ? formatCurrency(variant.yourPrice) : 'Ask price'}
-          <Text style={styles.perPiece}> /pc</Text>
-        </Text>
-        {commerce ? (
+        {isGrid ? (
+          <>
+            <Text style={styles.meta} numberOfLines={1}>{gridMeta}</Text>
+            <View style={styles.gridFooter}>
+              <Text style={styles.gridWeight}>{Number(variant.weightGrams ?? 0).toFixed(2)} gm</Text>
+              <TouchableOpacity
+                style={styles.gridAddButton}
+                activeOpacity={0.8}
+                onPress={(event) => {
+                  event.stopPropagation();
+                  onAdd?.(product);
+                }}
+              >
+                <Plus color={theme.primary} size={16} strokeWidth={2.6} />
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : (
+          <Text style={styles.meta}>
+            {variant.purity}  ·  {formatWeight(variant.weightGrams)}
+          </Text>
+        )}
+        {commerce && !isGrid ? <Text style={styles.moq}>MOQ: {variant.minimumOrderQuantity ?? 1} Pc</Text> : null}
+        {!isGrid ? (
+          <Text style={styles.price}>
+            {variant.yourPrice ? formatCurrency(variant.yourPrice) : 'Ask price'}
+            <Text style={styles.perPiece}> /pc</Text>
+          </Text>
+        ) : null}
+        {commerce && !isGrid ? (
           <TouchableOpacity
             style={styles.addButton}
             activeOpacity={0.8}
@@ -49,10 +77,10 @@ const ProductCard = ({ product, onPress, onAdd, compact = false, commerce = fals
   );
 };
 
-const createStyles = (theme, compact, commerce) => StyleSheet.create({
+const createStyles = (theme, compact, commerce, isGrid) => StyleSheet.create({
   card: {
     flex: 1,
-    minWidth: compact || commerce ? 0 : 156,
+    minWidth: compact || commerce || isGrid ? 0 : 156,
     backgroundColor: theme.surface,
     borderRadius: 8,
     borderWidth: 1,
@@ -60,7 +88,7 @@ const createStyles = (theme, compact, commerce) => StyleSheet.create({
     overflow: 'hidden',
   },
   imageWrap: {
-    height: compact ? 88 : commerce ? 105 : 132,
+    height: compact ? 88 : (commerce || isGrid) ? 105 : 132,
     backgroundColor: theme.surfaceMuted,
   },
   image: {
@@ -77,6 +105,28 @@ const createStyles = (theme, compact, commerce) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.floatingSurface,
+  },
+  gridFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 7,
+  },
+  gridWeight: {
+    ...typography.caption,
+    fontSize: 11,
+    fontWeight: '600',
+    color: theme.text,
+  },
+  gridAddButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    borderWidth: 1.3,
+    borderColor: theme.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.surface,
   },
   badge: {
     position: 'absolute',

@@ -11,7 +11,6 @@ import {
   B2B_REMOVE_CART_LOADING,
   B2B_REMOVE_CART_SUCCESS,
   B2B_REMOVE_CART_ERROR,
-  B2B_CLEAR_CART_SUCCESS,
 } from '../actions/cartActions';
 
 const initialState = {
@@ -107,13 +106,6 @@ const b2bCartReducer = (state = initialState, action) => {
         ...state,
         removeCartLoading: false,
         removeCartError: action.payload,
-      };
-
-    // Clear Cart
-    case B2B_CLEAR_CART_SUCCESS:
-      return {
-        ...state,
-        cart: null,
       };
 
     default:

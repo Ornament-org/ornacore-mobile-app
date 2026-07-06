@@ -4,15 +4,17 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Gem,
   Grid2X2,
   PackageOpen,
+  Search,
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
@@ -23,6 +25,15 @@ import { useAppTheme } from '../../../../theme/useAppTheme';
 import { typography } from '../../../../theme/typography';
 import catalogService from '../../../sharedCatalog/services/catalogService';
 import { loadB2BCatalog } from '../../../sharedCatalog/store/catalogSlice';
+import { useMetalRates } from '../../../sharedCatalog/hooks/useMetalRates';
+import { useProductSheet } from '../../products/context/ProductSheetContext';
+import { selectB2BCartItemCount } from '../../cart/selectors';
+import { glyphForCategory } from '../../home/components/JewelryGlyphs';
+import RateBanner from '../../home/components/RateBanner';
+import CatalogHeader from '../components/CatalogHeader';
+import CategoryChip from '../components/CategoryChip';
+import HowItWorksHint from '../components/HowItWorksHint';
+import ProductListToolbar from '../components/ProductListToolbar';
 
 const categoryImages = [
   'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=400&q=85',
@@ -73,9 +84,13 @@ const B2BCatalogScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const initializedKey = useRef(null);
   const { categories, metals, selectedMetalId, status } = useSelector((state) => state.catalog);
+  const { rateFor } = useMetalRates();
+  const { openProduct: openProductSheet } = useProductSheet();
+  const cartCount = useSelector(selectB2BCartItemCount);
   const [path, setPath] = useState([]);
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(false);
+  const [productLimit, setProductLimit] = useState(40);
 
   const selectedMetal = metals.find((metal) => metal.id === selectedMetalId) ?? metals[0];
   const currentCategory = path[path.length - 1] ?? categories[0];
@@ -83,13 +98,13 @@ const B2BCatalogScreen = ({ navigation, route }) => {
   const hasChildren = children.length > 0;
   const hasProducts = products.length > 0;
 
-  const loadProducts = useCallback(async (category) => {
+  const loadProducts = useCallback(async (category, limit = 40) => {
     if (!category) return;
     setProductsLoading(true);
     const rows = await catalogService.getProducts({
       metalId: selectedMetalId,
       categoryId: category.id,
-      limit: 40,
+      limit,
     });
     setProducts(rows);
     setProductsLoading(false);
@@ -98,8 +113,15 @@ const B2BCatalogScreen = ({ navigation, route }) => {
   const selectPath = useCallback((nextPath) => {
     const category = nextPath[nextPath.length - 1];
     setPath(nextPath);
+    setProductLimit(40);
     loadProducts(category);
   }, [loadProducts]);
+
+  const loadMore = () => {
+    const nextLimit = productLimit + 40;
+    setProductLimit(nextLimit);
+    loadProducts(currentCategory, nextLimit);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -124,52 +146,63 @@ const B2BCatalogScreen = ({ navigation, route }) => {
   const selectChild = (category) => selectPath([...path, category]);
   const selectBreadcrumb = (index) => selectPath(path.slice(0, index + 1));
   const openProduct = (product) => {
-    navigation.navigate(routeNames.b2bProductDetails, { productId: product.id });
+    openProductSheet(product);
   };
 
   return (
     <View style={styles.screen}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.eyebrow}>DISCOVER</Text>
-          <Text style={styles.title}>Jewellery Categories</Text>
-        </View>
-        <View style={styles.metalBadge}>
-          <Gem color={colors.primary} size={15} />
-          <Text style={styles.metalBadgeText}>{selectedMetal?.name ?? 'Gold'}</Text>
-        </View>
-      </View>
+      <CatalogHeader
+        cartCount={cartCount}
+        onBack={() => navigation.navigate(routeNames.home)}
+        onSearch={() => {}}
+        onCart={() => navigation.navigate(routeNames.cart)}
+      />
 
       <View style={styles.explorer}>
-        <ScrollView
-          style={styles.rail}
-          contentContainerStyle={[styles.railContent, { paddingBottom: insets.bottom + 88 }]}
-          showsVerticalScrollIndicator={false}
-        >
-          {categories.map((category, index) => {
-            const active = path[0]?.id === category.id;
-            return (
-              <TouchableOpacity
-                key={category.id}
-                style={[styles.railItem, active && styles.railItemActive]}
-                onPress={() => selectRoot(category)}
-              >
-                <View style={[styles.railThumb, active && styles.railThumbActive]}>
-                  <Image
-                    source={{ uri: category.imageUrl ?? categoryImages[index % categoryImages.length] }}
-                    style={styles.railImage}
-                  />
-                </View>
-                <Text style={[styles.railText, active && styles.railTextActive]} numberOfLines={2}>
-                  {category.name}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        <View style={[styles.rail, { paddingBottom: insets.bottom + 78 }]}>
+          <Text style={styles.railHeading}>PARENT CATEGORIES</Text>
+          <ScrollView
+            style={styles.railScroll}
+            contentContainerStyle={styles.railContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {categories.map((category) => {
+              const active = path[0]?.id === category.id;
+              const Glyph = glyphForCategory(category.name);
+              return (
+                <TouchableOpacity
+                  key={category.id}
+                  style={[styles.railItem, active && styles.railItemActive]}
+                  onPress={() => selectRoot(category)}
+                >
+                  <Glyph color={active ? colors.primary : colors.muted} size={22} />
+                  <Text style={[styles.railText, active && styles.railTextActive]} numberOfLines={2}>
+                    {category.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+          <RateBanner
+            compact
+            rate={rateFor(selectedMetalId)}
+            theme={colors}
+            onViewRates={() => {}}
+          />
+        </View>
 
         <View style={styles.contentPanel}>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.contentScroll, { paddingBottom: insets.bottom + 96 }]}>
+            <View style={styles.searchBar}>
+              <Search color={colors.muted} size={17} />
+              <TextInput
+                style={styles.searchInput}
+                placeholder={`Search in ${currentCategory?.name ?? 'catalog'}...`}
+                placeholderTextColor={colors.muted}
+                returnKeyType="search"
+              />
+            </View>
+
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -213,20 +246,20 @@ const B2BCatalogScreen = ({ navigation, route }) => {
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.horizontalCollections}
+                  contentContainerStyle={styles.chipRow}
                 >
+                  <CategoryChip label={`All ${currentCategory.name}`} active isAll onPress={() => {}} />
                   {children.map((category, index) => (
-                    <CollectionCard
+                    <CategoryChip
                       key={category.id}
-                      category={category}
-                      index={index}
-                      colors={colors}
-                      styles={styles}
-                      horizontal
+                      label={category.name}
+                      active={false}
+                      imageUrl={category.imageUrl ?? categoryImages[index % categoryImages.length]}
                       onPress={() => selectChild(category)}
                     />
                   ))}
                 </ScrollView>
+                <HowItWorksHint />
               </>
             ) : null}
 
@@ -247,19 +280,26 @@ const B2BCatalogScreen = ({ navigation, route }) => {
 
             {hasProducts ? (
               <View style={styles.productsSection}>
-                <Text style={styles.sectionLabel}>{hasChildren ? 'Featured Products' : 'Products'}</Text>
+                <ProductListToolbar categoryName={currentCategory?.name} count={products.length} />
                 <View style={styles.productGrid}>
                   {products.map((product) => (
                     <View key={product.id} style={styles.productCell}>
                       <ProductCard
-                        commerce
+                        layout="grid"
                         product={product}
+                        metalName={selectedMetal?.name}
                         onPress={() => openProduct(product)}
-                        onAdd={() => {}}
+                        onAdd={() => openProduct(product)}
                       />
                     </View>
                   ))}
                 </View>
+                {products.length >= productLimit ? (
+                  <TouchableOpacity style={styles.loadMore} activeOpacity={0.7} onPress={loadMore}>
+                    <Text style={styles.loadMoreText}>Load more</Text>
+                    <ChevronDown color={colors.primary} size={15} />
+                  </TouchableOpacity>
+                ) : null}
               </View>
             ) : null}
 
@@ -281,62 +321,62 @@ const B2BCatalogScreen = ({ navigation, route }) => {
 
 const createStyles = (colors) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  header: {
-    height: 68,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  eyebrow: { ...typography.overline, color: colors.primary, fontSize: 9 },
-  title: { ...typography.h5, color: colors.text, marginTop: 1 },
-  metalBadge: {
-    height: 32,
-    paddingHorizontal: 10,
-    borderRadius: 16,
-    backgroundColor: colors.primarySoft,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  metalBadgeText: { ...typography.caption, color: colors.primaryDark, fontWeight: '700' },
   explorer: { flex: 1, flexDirection: 'row' },
-  rail: { width: '25%', backgroundColor: colors.surfaceMuted, borderRightWidth: 1, borderRightColor: colors.border },
-  railContent: { paddingVertical: 8, paddingBottom: 88 },
+  rail: { width: '27%', backgroundColor: colors.surfaceMuted, borderRightWidth: 1, borderRightColor: colors.border },
+  railHeading: {
+    ...typography.overline,
+    fontSize: 8.5,
+    letterSpacing: 0.8,
+    color: colors.muted,
+    paddingHorizontal: 10,
+    paddingTop: 12,
+    paddingBottom: 4,
+  },
+  railScroll: { flex: 1 },
+  railContent: { paddingVertical: 4 },
+  chipRow: { gap: 8, paddingBottom: 4 },
   railItem: {
-    minHeight: 84,
-    paddingHorizontal: 5,
-    paddingVertical: 8,
+    minHeight: 52,
+    paddingHorizontal: 9,
+    paddingVertical: 10,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 8,
     borderLeftWidth: 3,
     borderLeftColor: colors.transparent,
   },
-  railItemActive: { backgroundColor: colors.surface, borderLeftColor: colors.primary },
-  railThumb: {
-    width: 43,
-    height: 43,
-    borderRadius: 8,
-    padding: 2,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
-  },
-  railThumbActive: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
-  railImage: { width: '100%', height: '100%', borderRadius: 6 },
+  railItemActive: { backgroundColor: colors.primarySoft, borderLeftColor: colors.primary },
   railText: {
     ...typography.caption,
-    color: colors.muted,
-    fontSize: 9,
-    lineHeight: 12,
-    marginTop: 5,
-    textAlign: 'center',
+    flex: 1,
+    color: colors.text,
+    fontSize: 10.5,
+    lineHeight: 13,
+    fontWeight: '600',
   },
   railTextActive: { color: colors.primaryDark, fontWeight: '800' },
-  contentPanel: { width: '75%', backgroundColor: colors.background },
+  searchBar: {
+    height: 42,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 11,
+    gap: 8,
+    marginBottom: 10,
+  },
+  searchInput: { ...typography.body2, flex: 1, paddingVertical: 0, fontSize: 11, color: colors.text },
+  loadMore: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    paddingVertical: 14,
+  },
+  loadMoreText: { ...typography.caption, fontSize: 11, fontWeight: '700', color: colors.primary },
+  contentPanel: { width: '73%', backgroundColor: colors.background },
   contentScroll: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 96 },
   breadcrumb: { minHeight: 24, alignItems: 'center', gap: 3, paddingRight: 12 },
   breadcrumbMetal: { ...typography.caption, color: colors.primary, fontWeight: '800' },
@@ -387,7 +427,6 @@ const createStyles = (colors) => StyleSheet.create({
   collectionName: { ...typography.subtitle2, color: colors.text, fontWeight: '800' },
   collectionCount: { ...typography.caption, color: colors.primary, fontSize: 9, marginTop: 3 },
   chevron: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  horizontalCollections: { gap: 8, paddingBottom: 14 },
   productsSection: { marginTop: 4 },
   productGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   productCell: { width: '48%' },
