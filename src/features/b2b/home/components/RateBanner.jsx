@@ -19,6 +19,9 @@ const RateBanner = ({ rate, theme, onViewRates, compact = false }) => {
   const isUp = (rate.change ?? 0) >= 0;
   const TrendIcon = isUp ? TrendingUp : TrendingDown;
   const trendColor = isUp ? theme.success : theme.danger;
+  const displayPrice = rate.displayCurrentPrice ?? rate.currentPrice;
+  const displayChange = rate.displayChange ?? rate.change;
+  const unit = rate.displayUnit ?? 'gm';
 
   return (
     <View style={styles.card}>
@@ -37,15 +40,15 @@ const RateBanner = ({ rate, theme, onViewRates, compact = false }) => {
         )}
         <View style={styles.priceRow}>
           <Text style={styles.rupee}>₹</Text>
-          <Text style={styles.price}>{formatPrice(rate.currentPrice)}</Text>
-          <Text style={styles.unit}>/gm</Text>
+          <Text style={styles.price}>{formatPrice(displayPrice)}</Text>
+          <Text style={styles.unit}>/{unit}</Text>
         </View>
 
         {rate.change !== null && (
           <View style={styles.changeRow}>
             <TrendIcon size={compact ? 11 : 13} color={trendColor} />
             <Text style={[styles.changeText, { color: trendColor }]}>
-              {formatPrice(Math.abs(rate.change))} ({Math.abs(rate.changePercent ?? 0)}%)
+              {formatPrice(Math.abs(displayChange))} ({Math.abs(rate.changePercent ?? 0)}%)
             </Text>
             {!compact ? <Text style={styles.changeSuffix}>from yesterday</Text> : null}
           </View>
