@@ -13,15 +13,22 @@ const ProfileHeroCard = ({ profile, location, memberSince, onEditPress, MetaIcon
     <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
       <View style={styles.shopArtWrap}>
         <View style={styles.shopArt}>
-          <Store size={58} color="#C58B12" strokeWidth={1.6} />
+          <Store size={58} color="#E5C22A" strokeWidth={1.6} />
         </View>
         <View style={styles.cameraBadge}>
-          <Camera size={19} color="#FFFFFF" strokeWidth={2.2} />
+          <Camera size={22} color="#FFBE35" strokeWidth={2.2} />
         </View>
       </View>
 
       <View style={styles.info}>
-        <Text style={[styles.shopName, { color: theme.text }]} numberOfLines={2}>
+        <Text
+          style={[
+            styles.shopName,
+            onEditPress && styles.shopNameWithEdit,
+            { color: theme.text },
+          ]}
+          numberOfLines={2}
+        >
           {profile?.shopName || 'Your Shop'}
         </Text>
 
@@ -37,28 +44,30 @@ const ProfileHeroCard = ({ profile, location, memberSince, onEditPress, MetaIcon
         </View>
 
         <View style={styles.metaRow}>
-          <MapPin size={16} color={theme.muted} />
+          <MapPin size={24} color={theme.muted} />
           <Text style={[styles.metaLine, { color: theme.muted }]} numberOfLines={1}>
             {location || 'Location not added'}
           </Text>
         </View>
 
         <View style={styles.metaRow}>
-          <MetaIcon size={16} color={theme.muted} />
+          <MetaIcon size={24} color={theme.muted} />
           <Text style={[styles.metaLine, { color: theme.muted }]} numberOfLines={1}>
             Member since {memberSince}
           </Text>
         </View>
       </View>
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={onEditPress}
-        style={styles.editButton}
-      >
-        <Pencil size={16} color="#C58B12" />
-        <Text style={styles.editText}>Edit Profile</Text>
-      </TouchableOpacity>
+      {onEditPress ? (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={onEditPress}
+          style={styles.editButton}
+        >
+          <Pencil size={16} color="#C58B12" />
+          <Text style={styles.editText}>Edit Profile</Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 };
@@ -67,11 +76,12 @@ export default ProfileHeroCard;
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: 16,
-    marginTop: 8,
+    marginHorizontal: 20,
+    marginTop: 24,
     borderWidth: 1,
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: 26,
+    paddingHorizontal: 24,
+    paddingVertical: 28,
     flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000000',
@@ -83,15 +93,15 @@ const styles = StyleSheet.create({
   shopArtWrap: {
     width: 104,
     height: 104,
-    marginRight: 16,
+    marginRight: 24,
   },
   shopArt: {
     width: 104,
     height: 104,
     borderRadius: 52,
-    borderWidth: 1,
-    borderColor: '#F3D48A',
-    backgroundColor: '#FFF8E8',
+    borderWidth: 4,
+    borderColor: '#E5C22A',
+    backgroundColor: '#3A2A12',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -102,7 +112,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#C58B12',
+    borderWidth: 2,
+    borderColor: '#E5C22A',
+    backgroundColor: '#151719',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -110,33 +122,38 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   shopName: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '900',
     marginBottom: 8,
+  },
+  shopNameWithEdit: {
+    paddingRight: 118,
   },
   statusPill: {
     alignSelf: 'flex-start',
     borderRadius: 12,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     flexDirection: 'row',
     gap: 5,
     alignItems: 'center',
     marginBottom: 10,
   },
   statusText: {
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: 18,
+    fontWeight: '900',
     textTransform: 'capitalize',
   },
   metaLine: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 22,
+    lineHeight: 28,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 10,
     marginBottom: 7,
   },
   editButton: {

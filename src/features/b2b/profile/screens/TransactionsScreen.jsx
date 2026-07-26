@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
+  RefreshControl,
   StyleSheet,
   Text,
   View,
@@ -7,12 +8,31 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowDownLeft, ArrowUpRight, Wallet } from 'lucide-react-native';
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAppTheme } from '../../../../theme/useAppTheme';
+import { b2bApi } from '../../../../services/api';
 import RegistrationCard from '../../component/RegistrationCard';
+import ProfileDueCard from '../components/ProfileDueCard';
+import { formatMetalWeight, getPrimaryMetalSummary } from '../utils/ledgerSummary';
 
 const TransactionsScreen = () => {
   const theme = useAppTheme();
+  const [ledgerSummary, setLedgerSummary] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const primaryMetalSummary = getPrimaryMetalSummary(ledgerSummary);
+  const currentDue = formatMetalWeight(primaryMetalSummary?.due);
+
+  const refreshLedger = useCallback(() => {
+    setRefreshing(true);
+    b2bApi.profile
+      .getMetalLedgerSummary()
+      .then((response) => setLedgerSummary(response?.data?.data ?? []))
+      .catch(() => setLedgerSummary([]))
+      .finally(() => setRefreshing(false));
+  }, []);
+
+  useFocusEffect(refreshLedger);
 
   const transactions = [
     {
@@ -105,22 +125,23 @@ const TransactionsScreen = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
+        refreshControl={(
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshLedger}
+            tintColor="#C58B12"
+          />
+        )}
       >
         <RegistrationCard
           title="Transactions"
           subtitle="View your payment history and ledger"
         >
-          <View style={styles.balanceCard}>
-            <Wallet size={24} color={theme.primary} />
-            <View style={styles.balanceInfo}>
-              <Text style={[styles.balanceLabel, { color: theme.muted }]}>
-                Current Balance
-              </Text>
-              <Text style={[styles.balanceAmount, { color: theme.text }]}>
-                ₹1,25,450
-              </Text>
-            </View>
-          </View>
+          <ProfileDueCard
+            dueAmount={currentDue}
+            metalName={primaryMetalSummary?.name || 'Gold'}
+            embedded
+          />
 
           <Text style={[styles.sectionTitle, { color: theme.text }]}>
             Recent Transactions
@@ -147,30 +168,6 @@ const styles = StyleSheet.create({
 
   content: {
     paddingBottom: 40,
-  },
-
-  balanceCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-  },
-
-  balanceInfo: {
-    marginLeft: 16,
-    flex: 1,
-  },
-
-  balanceLabel: {
-    fontSize: 14,
-    marginBottom: 4,
-  },
-
-  balanceAmount: {
-    fontSize: 28,
-    fontWeight: '700',
   },
 
   sectionTitle: {

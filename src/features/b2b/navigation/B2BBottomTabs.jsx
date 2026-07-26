@@ -94,7 +94,7 @@ const B2BBottomTabs = () => {
         }}
       />
       <Tab.Screen name={routeNames.orders} component={B2BOrdersScreen} options={{ tabBarLabel: 'Orders' }} />
-      <Tab.Screen name={routeNames.profile} component={B2BProfileScreen} options={{ tabBarLabel: 'Profile' }} />
+      <Tab.Screen name={routeNames.profile} component={B2BProfileScreen} options={{ tabBarLabel: 'Account' }} />
     </Tab.Navigator>
   );
 };
